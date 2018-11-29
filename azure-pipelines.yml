@@ -7,8 +7,13 @@ pool:
   vmImage: 'Ubuntu 16.04'
 
 variables:
-  imageName: 'stunnel:$(build.buildId)'
+  imageName: 'genericstunnel:$(build.buildId)'
+  imageNameLatest: 'genericstunnel:latest'
 
 steps:
-- script: docker build -f Docker/Dockerfile -t $(imageName) .
+- script: docker build -f Docker/Dockerfile -t $(imageName) -t $(imageNameLatest) .
   displayName: 'docker build'
+- script: |
+    docker login -u $(dockerId) -p $(dockerpswd) $(dockerId).azurecr.io
+    docker push $(dockerId).azurecr.io/$(imageName)
+    docker push $(dockerId).azurecr.io/$(imageNameLatest)
